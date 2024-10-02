@@ -32,6 +32,10 @@ Install dependencies using:
 ```bash
 npm ci
 ```
+Or:
+```bash
+npm install
+```
 
 Then fetch extra library, packager, and extension files using:
 
