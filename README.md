@@ -2,7 +2,7 @@
 
 Modification of the TurboWarp desktop app.
 
-If you're looking for downloads, head to: https://desktop.turbowarp.org/
+If you're looking for downloads of TurboWarp, head to: https://desktop.turbowarp.org/
 
 Licensed under the GPLv3.0. See LICENSE for more information.
 
