@@ -14,66 +14,66 @@ The website source code is in the `docs` folder.
 
 ## Development
 
-We use submodules, so clone using:
+1. We use submodules, so clone using:
 
-```bash
-git clone --recursive https://github.com/Mixality/sidekick-desktop sidekick-desktop
-```
+   ```bash
+   git clone --recursive https://github.com/Mixality/sidekick-desktop sidekick-desktop
+   ```
 
-or run this after cloning:
+   - or run this after cloning:
+     ```bash
+     git submodule init
+     git submodule update
+     ```
 
-```bash
-git submodule init
-git submodule update
-```
+2. Install dependencies using:
+   
+   ```bash
+   npm ci
+   ```
 
-Install dependencies using:
+   - or run:
+     
+     ```bash
+     npm install
+     ```
 
-```bash
-npm ci
-```
-Or:
-```bash
-npm install
-```
+3. Then fetch extra library, packager, and extension files using:
+   ```bash
+   npm run fetch
+   ```
 
-Then fetch extra library, packager, and extension files using:
+- Repeat the three previous sets of commands every time you pull changes from GitHub.
 
-```bash
-npm run fetch
-```
+> Due to the security requirements mandated by custom extensions existing, our desktop app is significantly more complicated than Scratch's.
+> 
+>  - **src-main** is what runs in Electron's main process. There is no build step; this code is included as-is. `src-main/entrypoint.js` is the entry point to the entire app.
+>  - **src-renderer-webpack** runs in an Electron renderer process to make the editor work. This is built by webpack as **dist-renderer-webpack**.
+>  - **src-renderer** also runs in an Electron renderer process, but without webpack. This is used for things like the privacy policy window.
+>  - **src-preload** runs as preload scripts in an Electron renderer process. They export glue functions to allow renderer and main to talk to each other in a somewhat controlled manner.
+>  - **dist-library-files** and **dist-extensions** contain additional static resources managed by `npm run fetch`
 
-Repeat the three previous sets of commands every time you pull changes from GitHub.
+4. To build the webpack portions in src-renderer-webpack for development builds, run this:
 
-Due to the security requirements mandated by custom extensions existing, our desktop app is significantly more complicated than Scratch's.
+   ```bash
+   npm run webpack:compile
+   ```
 
- - **src-main** is what runs in Electron's main process. There is no build step; this code is included as-is. `src-main/entrypoint.js` is the entry point to the entire app.
- - **src-renderer-webpack** runs in an Electron renderer process to make the editor work. This is built by webpack as **dist-renderer-webpack**.
- - **src-renderer** also runs in an Electron renderer process, but without webpack. This is used for things like the privacy policy window.
- - **src-preload** runs as preload scripts in an Electron renderer process. They export glue functions to allow renderer and main to talk to each other in a somewhat controlled manner.
- - **dist-library-files** and **dist-extensions** contain additional static resources managed by `npm run fetch`
+   - You can also run this instead for source file changes to immediately trigger rebuilds:
 
-To build the webpack portions in src-renderer-webpack for development builds, run this:
+     ```bash
+     npm run webpack:watch
+     ```
 
-```bash
-npm run webpack:compile
-```
+5. Once you have everything compiled and fetched, you are ready to package it up for Electron. For development, start a development Electron instance with:
 
-You can also run this instead for source file changes to immediately trigger rebuilds:
+   ```bash
+   npm run electron:start
+   ```
 
-```bash
-npm run webpack:watch
-```
+- In Linux, The app icon won't work in the development version, but it will work in the packaged version.
 
-Once you have everything compiled and fetched, you are ready to package it up for Electron. For development, start a development Electron instance with:
-
-```bash
-npm run electron:start
-```
-
-In Linux, The app icon won't work in the development version, but it will work in the packaged version.
-
-We've found that development can work pretty well if you open two terminals side-by-side and run `npm run webpack:watch` in one and `npm run electron:start` in the other. You can refresh the windows with ctrl+R or cmd+R for renderer file changes to apply, and manually restart the app for main file changes to apply.
+- We've found that development can work pretty well if you open two terminals side-by-side and run `npm run webpack:watch` in one and `npm run electron:start` in the other. You can refresh the windows with ctrl+R or cmd+R for renderer file changes to apply, and manually restart the app for main file changes to apply.
 
 ## Linux sandbox helper error
 
@@ -94,27 +94,27 @@ There are ways to make this permanent, but we don't think you should be making p
 
 ## Final production-ready builds
 
-The development version of the app will be larger and slower than the final release builds.
+- The development version of the app will be larger and slower than the final release builds.
 
-Build an optimized version of the webpack portions with:
+4. Build an optimized version of the webpack portions with:
+   ```bash
+   npm run webpack:prod
+   ```
 
-```bash
-npm run webpack:prod
-```
+5. Then to package up the final Electron binaries, use either our build script `release-automation/build.js` (see [release-automation/README.md](release-automation/README.md)) or the [electron-builder CLI](https://www.electron.build/cli). Either way the final builds are saved in the `dist` folder. Here are some examples using the electron-builder CLI directly:
+  
+   ```bash
+   # You can also do manual builds with electron-builder's CLI, for example:
+   # Windows installer
+   npx electron-builder --windows nsis --x64
+   # macOS DMG
+   npx electron-builder --mac dmg --universal
+   # Linux Debian
+   npx electron-builder --linux deb
+   # Debian Package for the Raspberry Pi (tested on RPi Model 4B)
+   ```
 
-Then to package up the final Electron binaries, use either our build script `release-automation/build.js` (see [release-automation/README.md](release-automation/README.md)) or the [electron-builder CLI](https://www.electron.build/cli). Either way the final builds are saved in the `dist` folder. Here are some examples using the electron-builder CLI directly:
-
-```bash
-# You can also do manual builds with electron-builder's CLI, for example:
-# Windows installer
-npx electron-builder --windows nsis --x64
-# macOS DMG
-npx electron-builder --mac dmg --universal
-# Linux Debian
-npx electron-builder --linux deb
-```
-
-You can typically only package for a certain operating system while on that operating system.
+- You can typically only package for a certain operating system while on that operating system.
 
 ## Advanced customizations
 
