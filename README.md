@@ -1,6 +1,6 @@
 # SIDEKICK Desktop
 
-Modification of the TurboWarp desktop app.
+Modification of the [TurboWarp Desktop](https://github.com/TurboWarp/desktop) app.
 
 If you're looking for downloads of TurboWarp, head to: https://desktop.turbowarp.org/
 
