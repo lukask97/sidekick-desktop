@@ -8,6 +8,7 @@ from tkinter.filedialog import askopenfilename
 import paramiko
 import scapy.all as scapy
 from paramiko import SSHClient
+from paramiko.agent import value
 from prettytable import PrettyTable
 from tkinterdnd2 import *
 
@@ -59,7 +60,7 @@ def display_devices(devices):
 
 
 def do_scan(event):
-    ip_range = '192.168.178.0/24'
+    ip_range = tb_ARP_IP.get()
     devices = scan_network(ip_range)
     dropdownlist = []
     for device in devices:
@@ -75,6 +76,7 @@ def get_path(event):
 def openfiledialog(event):
     event.widget.configure(textvariable=StringVar(
         value=askopenfilename(title="Datei ausählen", initialdir=os.getcwd(), initialfile="test.txt")))
+
 
 
 text_IP = "192.168.137.32"
@@ -119,7 +121,10 @@ entryWidget3.dnd_bind("<<Drop>>", get_path)
 entryWidget3.dnd_bind("<Button>", openfiledialog)
 
 dropdown = ttk.Combobox(frm)
-dropdown.grid(column=2, columnspan=1, row=5, sticky='ew')
+dropdown.grid(column=2, columnspan=1, row=6, sticky='ew')
+
+tb_ARP_IP = Entry(frm, textvariable=StringVar(value="192.168.217.0/24"))
+tb_ARP_IP.grid(column=0, row=5)
 
 
 def works(event):
@@ -142,6 +147,17 @@ def unzip(event):
 
     print("works")
 
+def openremotewindow(event):
+    ssh = SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(hostname=tb_IP.get(), username="deck", password=tb_PWD.get(),
+                disabled_algorithms={'keys': ['rsa-sha2-256', 'rsa-sha2-512']})
+    print("Connected")
+    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("export DISPALY=:0")
+    ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command("xdg-open https://google.com")
+    ssh.close()
+
+    print("open Google Command send")
 
 button1 = ttk.Button(frm, text="<--- Senden")
 button1.grid(column=2, row=2)
@@ -154,9 +170,16 @@ button2.drop_target_register(DND_ALL)
 button2.dnd_bind('<Button>', unzip)
 
 button3 = ttk.Button(frm, text="ARP-Network-Scan")
-button3.grid(column=2, row=4)
+button3.grid(column=2, row=5)
 button3.drop_target_register(DND_ALL)
 button3.dnd_bind('<Button>', do_scan)
+
+
+
+button4 = ttk.Button(frm, text="Open Google")
+button4.grid(column=3, row=2)
+button4.drop_target_register(DND_ALL)
+button4.dnd_bind('<Button>', openremotewindow)
 # print(get_if_list())
 # print(ni.interfaces())
 
